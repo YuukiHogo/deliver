@@ -46,8 +46,8 @@ module Deliver
     #  give all the information required (see {Deliverer::ValKey} for available options)
     # @param (Bool) force Runs a deployment without verifying any information. This can be 
     # used for build servers. If this is set to false a PDF summary will be generated and opened
-    def initialize(path = nil, hash: nil, force: false)
-      @deliver_process = DeliverProcess.new
+    def initialize(path = nil, hash: nil, force: false, beta_activate: false)
+      @deliver_process = DeliverProcess.new(beta_activate: beta_activate)
       @deliver_process.deploy_information[ValKey::SKIP_PDF] = true if force
 
       if hash

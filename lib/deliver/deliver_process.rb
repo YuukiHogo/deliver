@@ -19,9 +19,10 @@ module Deliver
     #  is used to store the deploy information until the Deliverfile finished running.
     attr_accessor :deploy_information
 
-    def initialize(deploy_information = nil)
+    def initialize(deploy_information = nil, beta_activate = false)
       @deploy_information = deploy_information || {}
       @deploy_information[:blocks] ||= {}
+      @beta_activate = beta_activate
     end
 
     def run
@@ -72,7 +73,7 @@ module Deliver
       used_ipa_file = @deploy_information[:ipa] || @deploy_information[:beta_ipa]
 
       if used_ipa_file
-        @ipa = Deliver::IpaUploader.new(Deliver::App.new, '/tmp/', used_ipa_file, is_beta_build?)
+        @ipa = Deliver::IpaUploader.new(Deliver::App.new, '/tmp/', used_ipa_file, is_beta_build?, @beta_activate)
 
         # We are able to fetch some metadata directly from the ipa file
         # If they were also given in the Deliverfile, we will compare the values

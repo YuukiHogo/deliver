@@ -17,7 +17,7 @@ module Deliver
     # @param ipa_path (String) The path to the IPA file which should be uploaded
     # @param is_beta_build (Bool) If it's a beta build, it will be released to the testers, otherwise into production
     # @raise (IpaUploaderError) Is thrown when the ipa file was not found or is not valid
-    def initialize(app, dir, ipa_path, is_beta_build)
+    def initialize(app, dir, ipa_path, is_beta_build, beta_activate = false)
       ipa_path.strip! # remove unused white spaces
       raise IpaUploaderError.new("IPA on path '#{ipa_path}' not found") unless File.exists?(ipa_path)
       raise IpaUploaderError.new("IPA on path '#{ipa_path}' is not a valid IPA file") unless ipa_path.include?".ipa"
@@ -26,6 +26,7 @@ module Deliver
 
       @ipa_file = Deliver::MetadataItem.new(ipa_path)
       @is_beta_build = is_beta_build
+      @beta_activate = beta_activate
     end
 
     # Fetches the app identifier (e.g. com.facebook.Facebook) from the given ipa file.
@@ -94,6 +95,7 @@ module Deliver
       end
 
       def publish_beta_build
+        return true unless @beta_activate
         # Distribute to beta testers
         Helper.log.info "Distributing the latest build to Beta Testers."
         if self.app.itc.put_build_into_beta_testing!(self.app, self.fetch_app_version)
